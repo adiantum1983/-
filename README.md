@@ -1,8 +1,8 @@
 # Generate Direct Method Cash Flow Statement from Trial Balance
-# 残高試算表から直接法キャッシュフロー計算書を自動生成
+# 残高試算表から直接法キャッシュフロー計算書(簡易)を自動生成
 
 ## 概要 (Overview)
-このプログラムは、Excel形式の「残高試算表（Trial Balance）」を読み込み、**直接法によるキャッシュフロー計算書（Cash Flow Statement by Direct Method）**を自動で算出してExcel形式で出力するPythonスクリプトです。
+このプログラムは、ExcelまたはCSV形式の「残高試算表（Trial Balance）」を読み込み、**直接法によるキャッシュフロー計算書（Cash Flow Statement by Direct Method）**を自動で算出してExcel形式で出力するPythonスクリプトです。
 
 間接法ではなく、売上や仕入、人件費など営業活動の実際のキャッシュフローを、各勘定科目の増減高と発生額から推計します。
 
@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 ## 使い方 (Usage)
 
-残高試算表のExcelファイルを用意し、コマンドラインから実行します。
+残高試算表のファイル（ExcelまたはCSV）を用意し、コマンドラインから実行します。
 
 ```bash
 python cashflow_direct.py <入力ファイル名> [-o <出力ファイル名>]
@@ -32,7 +32,7 @@ python cashflow_direct.py <入力ファイル名> [-o <出力ファイル名>]
 
 ### 実行例
 ```bash
-python cashflow_direct.py data.xlsx -o output_CF.xlsx
+python cashflow_direct.py data.csv -o output_CF.xlsx
 ```
 
 ## 入力データの形式 (Input Data Format)
@@ -57,7 +57,7 @@ python cashflow_direct.py data.xlsx -o output_CF.xlsx
 
 1. **GitHub にアップロードする**
    このフォルダ一式（`app.py`、`cashflow_direct.py`、`requirements.txt`など）を、ご自身の GitHub アカウントにアップロード（プッシュ）します。
-   > **【重要】** 残高試算表などの Excel データや PDF ファイルは個人情報や機密データが含まれるため、絶対に一緒にアップロードしないでください。すでに本フォルダには、機密ファイルがアップロードされないよう `.gitignore` を設定済みです。
+   > **【重要】** 残高試算表などの Excel/CSV データや PDF ファイルは個人情報や機密データが含まれるため、絶対に一緒にアップロードしないでください。すでに本フォルダには、機密ファイルがアップロードされないよう `.gitignore` を設定済みです。
 
 2. **Streamlit Community Cloud にログインする**
    [Streamlit Community Cloud](https://share.streamlit.io/) にアクセスし、GitHub アカウントでサインインします。
@@ -69,4 +69,4 @@ python cashflow_direct.py data.xlsx -o output_CF.xlsx
    - `Main file path` には `app.py` を入力します。
    - 「**Deploy**」ボタンを押すと、数分でアプリが Web 上で公開されます。
 
-公開された URL は他の人と共有でき、ブラウザ上から Excel ファイルをアップロードしてキャッシュフローを計算できるようになります。
+公開された URL は他の人と共有でき、ブラウザ上から Excel/CSV ファイルをアップロードしてキャッシュフローを計算できるようになります。
