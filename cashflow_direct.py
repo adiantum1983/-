@@ -1,14 +1,24 @@
-import pandas as pd
+import pandas as pd  # type: ignore
 import argparse
 import os
 import subprocess
 
 def load_trial_balance(filepath):
-    print(f"[{filepath}] を読み込んでいます...")
+    filename = filepath if isinstance(filepath, str) else getattr(filepath, "name", "unknown")
+    is_csv = filename.lower().endswith(".csv")
+
+    print(f"[{filename}] を読み込んでいます...")
     try:
-        df = pd.read_excel(filepath, header=None)
+        if is_csv:
+            try:
+                df = pd.read_csv(filepath, header=None, encoding="utf-8")
+            except UnicodeDecodeError:
+                if hasattr(filepath, "seek"): filepath.seek(0)  # type: ignore
+                df = pd.read_csv(filepath, header=None, encoding="shift_jis")
+        else:
+            df = pd.read_excel(filepath, header=None)
     except Exception as e:
-        raise RuntimeError(f"Excelファイルの読み込みに失敗しました: {e}")
+        raise RuntimeError(f"ファイルの読み込みに失敗しました: {e}")
 
     header_idx = -1
     for i, row in df.iterrows():
@@ -17,7 +27,16 @@ def load_trial_balance(filepath):
             break
             
     if isinstance(header_idx, int) and header_idx > 0:
-        df = pd.read_excel(filepath, header=header_idx)
+        if hasattr(filepath, "seek"): filepath.seek(0)  # type: ignore
+        
+        if is_csv:
+            try:
+                df = pd.read_csv(filepath, header=header_idx, encoding="utf-8")
+            except UnicodeDecodeError:
+                if hasattr(filepath, "seek"): filepath.seek(0)  # type: ignore
+                df = pd.read_csv(filepath, header=header_idx, encoding="shift_jis")
+        else:
+            df = pd.read_excel(filepath, header=header_idx)
 
     df.rename(columns={df.columns[0]: "Code"}, inplace=True)
     df["Code"] = df["Code"].astype(str).str.strip()
@@ -104,7 +123,8 @@ def create_direct_cf_statement(df):
     cff_total = nc_2200 + nc_2113
 
     # ======== CFレポートフォーマット作成 ========
-    rows = []
+    import typing
+    rows: typing.List[typing.Dict[str, typing.Any]] = []
     
     rows.append({"Category": "I. 営業活動によるキャッシュ・フロー", "Amount": ""})
     rows.append({"Category": "　営業収入", "Amount": int(cfo_sales)})
@@ -147,9 +167,9 @@ def generate_report(df_cf, output_path):
     wb = openpyxl.load_workbook(output_path)
     ws = wb.active
     
-    thin = Side(border_style="thin", color="000000")
-    border = Border(top=thin, bottom=thin)
-    header_fill = PatternFill(start_color="D9EAD3", end_color="D9EAD3", fill_type="solid")
+    thin = Side(border_style="thin", color="000000")  # type: ignore
+    border = Border(top=thin, bottom=thin)  # type: ignore
+    header_fill = PatternFill(start_color="D9EAD3", end_color="D9EAD3", fill_type="solid")  # type: ignore
     
     ws.column_dimensions['A'].width = 50
     ws.column_dimensions['B'].width = 20
@@ -158,13 +178,13 @@ def generate_report(df_cf, output_path):
         for cell in row:
             if cell.row == 1:
                 cell.fill = header_fill
-                cell.font = Font(bold=True)
+                cell.font = Font(bold=True)  # type: ignore
             elif cell.col_idx == 2 and isinstance(cell.value, (int, float)):
                 cell.number_format = '#,##0'
                 
-            if "I." in str(row[0].value) or "II." in str(row[0].value) or "III." in str(row[0].value) or "小計" in str(row[0].value) or "増減額" in str(row[0].value) or "期末残高" in str(row[0].value):
-                 row[0].font = Font(bold=True)
-                 row[1].font = Font(bold=True)
+            if "I." in str(row[0].value) or "II." in str(row[0].value) or "III." in str(row[0].value) or "小計" in str(row[0].value) or "増減額" in str(row[0].value) or "期末残高" in str(row[0].value):  # type: ignore
+                 row[0].font = Font(bold=True)  # type: ignore
+                 row[1].font = Font(bold=True)  # type: ignore
 
     wb.save(output_path)
     print(f"成功: Excelレポートを '{output_path}' に保存しました。")
