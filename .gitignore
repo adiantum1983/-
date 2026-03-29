@@ -22,3 +22,9 @@ venv/
 !README.md
 !cashflow_direct.py
 !app.py
+
+*.txt
+!requirements.txt
+!README.md
+!cashflow_direct.py
+!app.py
