@@ -1,14 +1,14 @@
-import streamlit as st
-import pandas as pd
+import streamlit as st  # type: ignore
+import pandas as pd  # type: ignore
 import io
-from cashflow_direct import load_trial_balance, create_direct_cf_statement
+from cashflow_direct import load_trial_balance, create_direct_cf_statement  # type: ignore
 
 st.set_page_config(page_title="Matrix CF Generator", layout="centered")
 
 st.title("📊 マトリックス法 キャッシュフロージェネレーター")
-st.markdown("お手元の **残高試算表 (Excel)** をアップロードするだけで、直接法キャッシュフロー計算書を自動生成します。")
+st.markdown("お手元の **残高試算表 (ExcelまたはCSV)** をアップロードするだけで、直接法キャッシュフロー計算書を自動生成します。")
 
-uploaded_file = st.file_uploader("残高試算表のExcelファイルをドラッグ＆ドロップ（または選択）", type=["xlsx", "xls"])
+uploaded_file = st.file_uploader("残高試算表のファイル（Excel/CSV）をドラッグ＆ドロップ（または選択）", type=["xlsx", "xls", "csv"])
 
 if uploaded_file is not None:
     st.info("ファイルを読み込み、マトリックス法による計算を行っています...")
@@ -28,7 +28,7 @@ if uploaded_file is not None:
             df_cf.to_excel(writer, index=False, sheet_name="キャッシュフロー計算書", header=["項目", "金額"])
             worksheet = writer.sheets["キャッシュフロー計算書"]
             
-            from openpyxl.styles import Font, Border, Side, PatternFill
+            from openpyxl.styles import Font, Border, Side, PatternFill  # type: ignore
             thin = Side(border_style="thin", color="000000")
             header_fill = PatternFill(start_color="D9EAD3", end_color="D9EAD3", fill_type="solid")
             
@@ -39,14 +39,14 @@ if uploaded_file is not None:
                 for cell in row:
                     if cell.row == 1:
                         cell.fill = header_fill
-                        cell.font = Font(bold=True)
+                        cell.font = Font(bold=True)  # type: ignore
                     elif cell.col_idx == 2 and isinstance(cell.value, (int, float)):
                         cell.number_format = '#,##0'
-                    if isinstance(row[0].value, str):
-                        val = row[0].value
+                    if isinstance(row[0].value, str):  # type: ignore
+                        val = row[0].value  # type: ignore
                         if "I." in val or "II." in val or "III." in val or "小計" in val or "増減額" in val or "期末残高" in val:
-                             row[0].font = Font(bold=True)
-                             row[1].font = Font(bold=True)
+                             row[0].font = Font(bold=True)  # type: ignore
+                             row[1].font = Font(bold=True)  # type: ignore
                              
         st.download_button(
             label="⬇️ Excel形式でダウンロード",
